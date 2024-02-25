@@ -1,0 +1,3 @@
+rootProject.name = "Food For All"
+include ':app'
+include ':application'
