@@ -104,7 +104,7 @@ Make sure you have the following installed on your machine:
    ```bash
    git clone https://github.com/your-username/your-app.git
 
-2.Navigate to the Project Directory:
+2. Navigate to the Project Directory:
 
     ```bash
     cd your-app
