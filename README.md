@@ -73,7 +73,7 @@ Food For All:
 
 ### The Architecture
 
-![image info](./img/architecture.png)
+![image info](./img/pub-sub.png)
 
 
 ### Simplified User Flow  
