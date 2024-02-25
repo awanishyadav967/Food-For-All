@@ -103,12 +103,18 @@ Make sure you have the following installed on your machine:
 
    ```bash
    git clone https://github.com/your-username/your-app.git
-2. Open the Project in Android Studio:
+
+2.Navigate to the Project Directory:
+
+    ```bash
+    cd your-app
+
+3. Open the Project in Android Studio:
 
 - Launch Android Studio.
 - Choose "Open an existing Android Studio project" and select the directory where you cloned the repository.
 
-3. Test the Application:
+4. Test the Application:
 
 - Deploy/Run the application on your device.
 - Interact with the app to ensure it functions as expected.
