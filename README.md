@@ -90,6 +90,21 @@ Click on below Thumbnail to see Demonstration
 [![Food For All Demonstration](https://github.com/Ashwith2001/FoodForAll/blob/main/img/thumbnail.jpg)](https://youtu.be/4Op3FarztoU)
 
 
+### Prerequisites
+
+Make sure you have the following installed on your machine:
+
+- Android Studio
+- Java Development Kit (JDK)
+
+### Getting Started
+
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/your-username/your-app.git
+
+
 ### Implemented Technologies   
 
 - Kotlin
