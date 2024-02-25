@@ -87,9 +87,7 @@ Food For All:
 ## Demonstration
 
 # Click on below link to see Demo:
-
-![App Demonstration](https://youtu.be/CBoecD8DByA)
-
+[![App Demonstration](youtube.jpg)](https://www.youtube.com/watch?v=CBoecD8DByA)
 
 ### Prerequisites
 
@@ -178,10 +176,10 @@ By harnessing these technologies, Food For All aims to provide an efficient, sec
 
 ## Authors
 
-* Avanish Yadav
-* Rohan Siwach
-* Gauri Gupta
-* Tisha Hans
+* Avanish Yadav[Android Expert]
+* Rohan Siwach[Machine Learning Expert]
+* Gauri Gupta[Product Designer]
+* Tisha Hans[Google Cloud Expert]
 
 
  
