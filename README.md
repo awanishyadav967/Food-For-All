@@ -178,7 +178,7 @@ By harnessing these technologies, Food For All aims to provide an efficient, sec
 
 * Avanish Yadav[Android Expert]
 * Rohan Siwach[Machine Learning Expert]
-* Gauri Gupta[Product Designer]
+* Gauri Gupta[Product Designer] 
 * Tisha Hans[Google Cloud Expert]
 
 
