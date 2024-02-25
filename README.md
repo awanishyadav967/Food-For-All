@@ -97,6 +97,50 @@ Click on below Thumbnail to see Demonstration
 
 ---
 
+## Technology Integration
+
+Food For All leverages cutting-edge technologies to enhance its functionality and effectiveness. The integration of TensorFlow, Gemini, and Google Cloud brings advanced features to address key aspects of the app's objectives.
+
+### TensorFlow Integration
+
+#### Image Recognition for Food
+
+TensorFlow is employed for image recognition, enabling the app to identify and categorize leftover food based on photos provided by merchants.
+
+#### User Authentication
+
+TensorFlow ensures secure user authentication, preventing unauthorized access and ensuring the legitimacy of merchant and NGO accounts.
+
+### Gemini (GPT-3) Integration
+
+#### Natural Language Processing (NLP)
+
+Gemini's natural language processing capabilities improve communication between merchants and NGOs, automating aspects of negotiation for a more efficient and user-friendly experience.
+
+#### Automated Notifications
+
+Gemini assists in generating personalized and context-aware notifications, enhancing engagement and facilitating quick responses from NGOs.
+
+### Google Cloud Integration
+
+#### Cloud-based Data Storage
+
+Google Cloud Storage securely stores data, including merchant information, food details, and NGO contacts, ensuring scalability and accessibility from anywhere.
+
+#### Real-time Notifications
+
+Google Cloud Messaging (or Firebase Cloud Messaging) is implemented for real-time notifications, ensuring that NGOs receive timely alerts when new food items are registered.
+
+#### Geolocation Services
+
+Google Cloud's geolocation services facilitate the negotiation process, providing location-based information to help NGOs identify nearby supply centers with leftover food.
+
+#### Data Analytics
+
+Google Cloud's data analytics services gather insights into patterns of food waste, donation frequency, and popular food items, optimizing the app's features and improving its effectiveness over time.
+
+By harnessing these technologies, Food For All aims to provide an efficient, secure, and data-driven solution in reducing food waste and alleviating hunger.
+
 
 ## Authors
 
