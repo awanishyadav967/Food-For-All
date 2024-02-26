@@ -143,7 +143,7 @@ TensorFlow is employed for image recognition, enabling the app to identify and c
 
 TensorFlow ensures secure user authentication, preventing unauthorized access and ensuring the legitimacy of merchant and NGO accounts.
 
-### Gemini (GPT-3) Integration
+### Gemini Integration
 
 #### Natural Language Processing (NLP)
 
