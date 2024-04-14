@@ -19,7 +19,7 @@ Contents
 1. [Market opportunity](#Market-opportunity)
 1. [Our solution](#our-solution)
 2. [Demonstration](#Demonstration)
-3. [Authors](#authors)
+
 
 ---
 
@@ -174,12 +174,6 @@ Google Cloud's data analytics services gather insights into patterns of food was
 By harnessing these technologies, Food For All aims to provide an efficient, secure, and data-driven solution in reducing food waste and alleviating hunger.
 
 
-## Authors
-
-* Avanish Yadav[Android Expert]
-* Rohan Siwach[Machine Learning Expert]
-* Gauri Gupta[Product Designer] 
-* Tisha Hans[Google Cloud Expert]
 
 
  
