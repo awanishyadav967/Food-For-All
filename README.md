@@ -1,4 +1,4 @@
-# Food For All App: Zero Hunger
+# Share-A-Bite
 
 <p align="center">
   <a href="" rel="noopener">
@@ -25,7 +25,7 @@ Contents
 
 ## Introduction
 
-__Food For All__ is an app developed for Google Solutions 2022. Our objectives are reduce the food waste and consequently contribute to reduce hunger. The app connects the merchant, who works in supply centers and has to throw away unsold food everyday, and NGOs that fight hunger and help to feed hungry people before the food becomes  unfit for human consumption.
+__Share-A-Bite__ is an app developed for Google Solutions Challenge 2024. Our objectives are reduce the food waste and consequently contribute to reduce hunger. The app connects the merchant, who works in supply centers and has to throw away unsold food everyday, and NGOs that fight hunger and help to feed hungry people before the food becomes  unfit for human consumption.
 
 
 ---
