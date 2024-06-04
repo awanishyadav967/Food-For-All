@@ -1,49 +1,55 @@
-package br.com.fomezero.joaofood.activities.merchant
+package br.com.fomezero.joaofood.activities.merchant;
 
-import android.content.Intent
-import android.os.Bundle
-import androidx.appcompat.app.ActionBar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import br.com.fomezero.joaofood.R
-import kotlinx.android.synthetic.main.activity_merchant_home.navigationView
+import android.content.Intent;
+import android.os.Bundle;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import br.com.fomezero.joaofood.R;
+import br.com.fomezero.joaofood.fragments.MerchantHomeFragment;
+import br.com.fomezero.joaofood.fragments.MerchantProfileFragment;
+import br.com.fomezero.joaofood.activities.NewProductActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-class MerchantHomeActivity : AppCompatActivity() {
+public class MerchantHomeActivity extends AppCompatActivity {
 
-    private lateinit var actionBar: ActionBar
+    private ActionBar actionBar;
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_merchant_home)
-        loadFragment(MerchantHomeFragment())
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_merchant_home);
+        loadFragment(new MerchantHomeFragment());
 
-        navigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.home ->  {
-                    loadFragment(MerchantHomeFragment())
-                    return@setOnItemSelectedListener true
+        BottomNavigationView navigationView = findViewById(R.id.navigationView);
+        navigationView.setOnItemSelectedListener(new BottomNavigationView.OnItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.home:
+                        loadFragment(new MerchantHomeFragment());
+                        return true;
+
+                    case R.id.profile:
+                        loadFragment(new MerchantProfileFragment());
+                        return true;
+
+                    case R.id.addFood:
+                        Intent newProductIntent = new Intent(MerchantHomeActivity.this, NewProductActivity.class);
+                        startActivity(newProductIntent);
+                        return true;
                 }
-
-                R.id.profile -> {
-                    loadFragment(MerchantProfileFragment())
-                    return@setOnItemSelectedListener true
-                }
-
-                R.id.addFood -> {
-                    val newProductIntent = Intent(this, NewProductActivity::class.java)
-                    startActivity(newProductIntent)
-                }
+                return false;
             }
-
-            return@setOnItemSelectedListener false
-        }
+        });
     }
 
-    private fun loadFragment(fragment: Fragment) {
-        val transaction = supportFragmentManager.beginTransaction()
-        transaction.replace(R.id.container, fragment)
-        transaction.addToBackStack(null)
-        transaction.commit()
+    private void loadFragment(Fragment fragment) {
+        getSupportFragmentManager()
+            .beginTransaction()
+            .replace(R.id.container, fragment)
+            .addToBackStack(null)
+            .commit();
     }
-
 }
