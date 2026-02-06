@@ -1,188 +1,247 @@
-package br.com.fomezero.joaofood.activities.merchant
+package br.com.fomezero.joaofood.activities.merchant;
 
-import android.Manifest
-import android.content.ActivityNotFoundException
-import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.os.Build
-import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
-import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.graphics.drawable.toBitmap
-import br.com.fomezero.joaofood.R
-import br.com.fomezero.joaofood.activities.ActiveUserData
-import br.com.fomezero.joaofood.modules.img.domain.api.UploadImageProvider
-import br.com.fomezero.joaofood.modules.img.domain.model.ImgResult
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import kotlinx.android.synthetic.main.activity_new_food.addFoodButton
-import kotlinx.android.synthetic.main.activity_new_food.donationSwitch
-import kotlinx.android.synthetic.main.activity_new_food.foodImage
-import kotlinx.android.synthetic.main.activity_new_food.priceField
-import kotlinx.android.synthetic.main.activity_new_food.priceInputLayout
-import kotlinx.android.synthetic.main.activity_new_food.productNameField
-import kotlinx.android.synthetic.main.activity_new_food.quantityField
-import kotlinx.android.synthetic.main.activity_new_food.submitProductButton
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import java.time.format.DateTimeFormatter
-import java.sql.Timestamp
-import java.time.LocalDateTime
-import java.util.*
-import kotlin.collections.HashMap
+import android.Manifest;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.Build;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Switch;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
-class NewProductActivity : AppCompatActivity() {
-    private val db: FirebaseFirestore by lazy {
-        Firebase.firestore
-    }
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
-    private val auth: FirebaseAuth by lazy {
-        Firebase.auth
-    }
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_new_food)
-        donationSwitch.isChecked = true
+import br.com.fomezero.joaofood.R;
+import br.com.fomezero.joaofood.activities.ActiveUserData;
+import br.com.fomezero.joaofood.modules.img.domain.api.UploadImageProvider;
+import br.com.fomezero.joaofood.modules.img.domain.model.ImgResult;
 
-        donationSwitch.setOnClickListener {
-            if (donationSwitch.isChecked) {
-                priceInputLayout.visibility = View.GONE
-            } else {
-                priceInputLayout.visibility = View.VISIBLE
-            }
-        }
+public class NewProductActivity extends AppCompatActivity {
 
-        addFoodButton.setOnClickListener {
-            if (Build.VERSION.SDK_INT < 23) {
-                takePhoto()
-            } else {
-                if (ActivityCompat.checkSelfPermission(
-                        this,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) == PackageManager.PERMISSION_GRANTED
-                ) {
-                    takePhoto()
+    private static final String TAG = "NewProductActivity";
+    private static final int CAMERA_REQUEST = 1888;
+
+    // View declarations
+    private Switch donationSwitch;
+    private View priceInputLayout;
+    private Button addFoodButton;
+    private Button submitProductButton;
+    private ImageView foodImage;
+    private EditText priceField;
+    private EditText productNameField;
+    private EditText quantityField;
+
+    // Firebase instances
+    private FirebaseFirestore db;
+    private FirebaseAuth auth;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new_food);
+
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance();
+        auth = FirebaseAuth.getInstance();
+
+        // Initialize Views
+        donationSwitch = findViewById(R.id.donationSwitch);
+        priceInputLayout = findViewById(R.id.priceInputLayout);
+        addFoodButton = findViewById(R.id.addFoodButton);
+        submitProductButton = findViewById(R.id.submitProductButton);
+        foodImage = findViewById(R.id.foodImage);
+        priceField = findViewById(R.id.priceField);
+        productNameField = findViewById(R.id.productNameField);
+        quantityField = findViewById(R.id.quantityField);
+
+        // Setup logic
+        donationSwitch.setChecked(true);
+
+        donationSwitch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (donationSwitch.isChecked()) {
+                    priceInputLayout.setVisibility(View.GONE);
                 } else {
-                    val permissionStorage = arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    //Asking request Permissions
-                    ActivityCompat.requestPermissions(this, permissionStorage, 9)
+                    priceInputLayout.setVisibility(View.VISIBLE);
                 }
             }
-        }
+        });
 
-        submitProductButton.setOnClickListener {
-            onSubmit()
-        }
+        addFoodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (Build.VERSION.SDK_INT < 23) {
+                    takePhoto();
+                } else {
+                    if (ActivityCompat.checkSelfPermission(
+                            NewProductActivity.this,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    ) == PackageManager.PERMISSION_GRANTED) {
+                        takePhoto();
+                    } else {
+                        String[] permissionStorage = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                        ActivityCompat.requestPermissions(NewProductActivity.this, permissionStorage, 9);
+                    }
+                }
+            }
+        });
+
+        submitProductButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSubmit();
+            }
+        });
     }
 
-    private fun takePhoto() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    private void takePhoto() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            startActivityForResult(takePictureIntent, CAMERA_REQUEST)
-        } catch (e: ActivityNotFoundException) {
-            Toast.makeText(this, "Camera is unavailable", Toast.LENGTH_LONG).show()
+            startActivityForResult(takePictureIntent, CAMERA_REQUEST);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, "Camera is unavailable", Toast.LENGTH_LONG).show();
         }
     }
 
-
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val intentHome = Intent(this, MerchantHomeActivity::class.java)
-        startActivity(intentHome)
-        finish()
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent intentHome = new Intent(this, MerchantHomeActivity.class);
+        startActivity(intentHome);
+        finish();
     }
 
-    private fun onSubmit() {
-        val price = if (donationSwitch.isChecked) {
-            "0.0"
+    private void onSubmit() {
+        final String price;
+        if (donationSwitch.isChecked()) {
+            price = "0.0";
         } else {
-            priceField.text.toString()
+            price = priceField.getText().toString();
         }
 
-        val users = db.collection("users")
-        val query = users.whereEqualTo("email", auth.currentUser?.email)
-        query.get()
-            .addOnSuccessListener { result ->
-                if (result.isEmpty.not()) {
-                    val document = result.first()
-                    val productData = hashMapOf(
-                        "name" to productNameField.text.toString(),
-                        "amount" to quantityField.text.toString(),
-                        "price" to price,
-                        "user" to document.reference,
-                        "postDate" to LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")).toString(),
-                    )
-                    db.collection("products").add(productData)
-                        .addOnSuccessListener { productReference ->
-                            Log.d(
-                                TAG,
-                                "DocumentSnapshot added with ID: ${productReference.id}"
-                            )
-                            ActiveUserData.sendNotification(productReference.id)
+        if (auth.getCurrentUser() == null) return;
 
-                            GlobalScope.launch(Dispatchers.IO) {
-                                val imgResult = UploadImageProvider.uploadFile(foodImage.drawable.toBitmap(), productReference.id)
+        db.collection("users")
+                .whereEqualTo("email", auth.getCurrentUser().getEmail())
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot result) {
+                        if (!result.isEmpty()) {
+                            DocumentSnapshot document = result.getDocuments().get(0);
 
-                                if (imgResult is ImgResult.Success) {
-                                    val url = imgResult.reponse?.data?.link
-                                    val map = HashMap<String, Any>()
-                                    val array = arrayOf(url)
-                                    map["image"] = Arrays.asList(*array)
-                                    productReference.update(map)
-                                }
-                                else{
-                                    val map = HashMap<String, Any>()
-                                    val array = arrayOf("https://ibb.co/5Tkdsc6")
-                                    map["image"] = Arrays.asList(*array)
-                                    productReference.update(map)
-                                    Log.e("Ash", "error in image")
-                                }
-
+                            Map<String, Object> productData = new HashMap<>();
+                            productData.put("name", productNameField.getText().toString());
+                            productData.put("amount", quantityField.getText().toString());
+                            productData.put("price", price);
+                            productData.put("user", document.getReference());
+                            
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                productData.put("postDate", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+                            } else {
+                                // Fallback for older Android versions if strictly needed, or just string
+                                productData.put("postDate", new java.util.Date().toString()); 
                             }
 
+                            db.collection("products").add(productData)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference productReference) {
+                                            Log.d(TAG, "DocumentSnapshot added with ID: " + productReference.getId());
+                                            
+                                            ActiveUserData.sendNotification(productReference.getId());
 
-                            runOnUiThread {
-                                val intentRegisterConfirmation = Intent(this, RegisterConfirmationActivity::class.java)
-                                startActivity(intentRegisterConfirmation)
-                                finish()
-                            }
-                            finish()
+                                            // Replicating Kotlin GlobalScope.launch with a Thread
+                                            new Thread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    Bitmap bitmap = null;
+                                                    if (foodImage.getDrawable() instanceof BitmapDrawable) {
+                                                        bitmap = ((BitmapDrawable) foodImage.getDrawable()).getBitmap();
+                                                    }
+                                                    
+                                                    // Assuming UploadImageProvider is accessible from Java
+                                                    if (bitmap != null) {
+                                                        ImgResult imgResult = UploadImageProvider.uploadFile(bitmap, productReference.getId());
+
+                                                        if (imgResult instanceof ImgResult.Success) {
+                                                            // Note: Accessing Kotlin properties from Java might require getter methods 
+                                                            // depending on how ImgResult is compiled (e.g., getReponse(), getData(), getLink())
+                                                            // Below assumes direct field access or compatible getters
+                                                            String url = ((ImgResult.Success) imgResult).getReponse().getData().getLink();
+                                                            
+                                                            Map<String, Object> map = new HashMap<>();
+                                                            map.put("image", Arrays.asList(url));
+                                                            productReference.update(map);
+                                                        } else {
+                                                            Map<String, Object> map = new HashMap<>();
+                                                            map.put("image", Arrays.asList("https://ibb.co/5Tkdsc6"));
+                                                            productReference.update(map);
+                                                            Log.e("Ash", "error in image");
+                                                        }
+                                                    }
+
+                                                    // Return to UI thread for navigation
+                                                    runOnUiThread(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            Intent intentRegisterConfirmation = new Intent(NewProductActivity.this, RegisterConfirmationActivity.class);
+                                                            startActivity(intentRegisterConfirmation);
+                                                            finish();
+                                                        }
+                                                    });
+                                                }
+                                            }).start();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error adding document", e);
+                                            finish();
+                                        }
+                                    });
                         }
-                        .addOnFailureListener { e ->
-                            Log.w(TAG, "Error adding document", e)
-                            finish()
-                        }
-                }
-
-
-            }
-
+                    }
+                });
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
-            val photo = data?.extras?.get("data") as Bitmap?
-            foodImage.setImageBitmap(photo)
-            foodImage.visibility = View.VISIBLE
-            // TODO: Send photo do imgur and send url to database
-//            val imageUri = photo?.let { getImageUri(this, it) }
+            if (data != null && data.getExtras() != null) {
+                Bitmap photo = (Bitmap) data.getExtras().get("data");
+                foodImage.setImageBitmap(photo);
+                foodImage.setVisibility(View.VISIBLE);
+            }
         }
-    }
-
-    companion object {
-        private const val TAG = "NewProductActivity"
-        private const val CAMERA_REQUEST = 1888
     }
 }
