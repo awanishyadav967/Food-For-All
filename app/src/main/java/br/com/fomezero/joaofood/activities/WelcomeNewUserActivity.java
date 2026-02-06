@@ -1,43 +1,60 @@
-package br.com.fomezero.joaofood.activities
+package br.com.fomezero.joaofood.activities;
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import br.com.fomezero.joaofood.R
-import br.com.fomezero.joaofood.activities.merchant.SignUpMerchantActivity
-import br.com.fomezero.joaofood.activities.ong.SignUpOngActivity
-import kotlinx.android.synthetic.main.activity_welcome_new_user.merchantButton
-import kotlinx.android.synthetic.main.activity_welcome_new_user.ongButton
+import android.content.Intent;
+import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 
-class WelcomeNewUserActivity : AppCompatActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_welcome_new_user)
+import br.com.fomezero.joaofood.R;
+import br.com.fomezero.joaofood.activities.merchant.SignUpMerchantActivity;
+import br.com.fomezero.joaofood.activities.ong.SignUpOngActivity;
 
-        merchantButton.setOnClickListener {
-            onClickMerchant()
-        }
-        ongButton.setOnClickListener {
-            onClickOng()
-        }
+public class WelcomeNewUserActivity extends AppCompatActivity {
+
+    private Button merchantButton;
+    private Button ongButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_welcome_new_user);
+
+        merchantButton = findViewById(R.id.merchantButton);
+        ongButton = findViewById(R.id.ongButton);
+
+        merchantButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickMerchant();
+            }
+        });
+
+        ongButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onClickOng();
+            }
+        });
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        val loginIntent = Intent(this, LoginActivity::class.java)
-        startActivity(loginIntent)
-        finish()
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent loginIntent = new Intent(this, LoginActivity.class);
+        startActivity(loginIntent);
+        finish();
     }
 
-    private fun onClickMerchant() {
-        val signUpIntent = Intent(this, SignUpMerchantActivity::class.java)
-        startActivity(signUpIntent)
-        finish()
+    private void onClickMerchant() {
+        Intent signUpIntent = new Intent(this, SignUpMerchantActivity.class);
+        startActivity(signUpIntent);
+        finish();
     }
 
-    private fun onClickOng() {
-        val signUpIntent = Intent(this, SignUpOngActivity::class.java)
-        startActivity(signUpIntent)
-        finish()
+    private void onClickOng() {
+        Intent signUpIntent = new Intent(this, SignUpOngActivity.class);
+        startActivity(signUpIntent);
+        finish();
     }
 }
