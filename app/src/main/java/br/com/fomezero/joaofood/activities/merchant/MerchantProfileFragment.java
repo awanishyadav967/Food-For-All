@@ -1,69 +1,93 @@
-package br.com.fomezero.joaofood.activities.merchant
+package br.com.fomezero.joaofood.activities.merchant;
 
-import android.content.Intent
-import android.graphics.drawable.Drawable
-import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import br.com.fomezero.joaofood.R
-import br.com.fomezero.joaofood.activities.ActiveUserData
-import br.com.fomezero.joaofood.activities.LoginActivity
-import br.com.fomezero.joaofood.util.loadImage
-import kotlinx.android.synthetic.main.card_list.view.*
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.*
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.acc_email
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.acc_phone
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.accountExitButton
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.profileName
-import kotlinx.android.synthetic.main.fragment_merchant_perfil.profilePicture
-import kotlinx.android.synthetic.main.fragment_ong_profile.*
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.ImageView;
+import android.widget.Button;
 
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
-class MerchantProfileFragment : Fragment() {
+import br.com.fomezero.joaofood.R;
+import br.com.fomezero.joaofood.activities.ActiveUserData;
+import br.com.fomezero.joaofood.activities.LoginActivity;
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_merchant_perfil, container, false)
+import static br.com.fomezero.joaofood.util.ImageLoader.loadImage; // adjust if needed
+
+public class MerchantProfileFragment extends Fragment {
+
+    private TextView profileName;
+    private TextView acc_name;
+    private TextView acc_phone;
+    private TextView acc_email;
+    private ImageView profilePicture;
+    private Button accountExitButton;
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        View root = inflater.inflate(R.layout.fragment_merchant_perfil, container, false);
+
+        // Initialize views
+        profileName = root.findViewById(R.id.profileName);
+        acc_name = root.findViewById(R.id.acc_name);
+        acc_phone = root.findViewById(R.id.acc_phone);
+        acc_email = root.findViewById(R.id.acc_email);
+        profilePicture = root.findViewById(R.id.profilePicture);
+        accountExitButton = root.findViewById(R.id.accountExitButton);
+
+        return root;
     }
 
-    override fun onStart() {
-        super.onStart()
-        accountExitButton.setOnClickListener {
-            logout()
+    @Override
+    public void onStart() {
+        super.onStart();
+
+        accountExitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logout();
+            }
+        });
+
+        Bundle merchantData = ActiveUserData.getData();
+
+        if (merchantData != null) {
+            String name = merchantData.getString("name");
+            if (name != null) {
+                String profileFirstName = name.split(" ")[0];
+                profileName.setText(profileFirstName);
+            }
+
+            acc_name.setText(merchantData.getString("name"));
+            acc_phone.setText(merchantData.getString("phoneNumber"));
+            acc_email.setText(merchantData.getString("email"));
+
+            CircularProgressDrawable drawable =
+                    new CircularProgressDrawable(requireActivity());
+            drawable.start();
+
+            loadImage(profilePicture,
+                    merchantData.getString("imageProf"),
+                    drawable);
         }
-        val merchantData = ActiveUserData.data
-        val name = merchantData?.getString("name").toString()
-        val profilename = name.substringBefore(" ")
-
-        profileName.text = profilename
-
-        acc_name.text = merchantData?.getString("name")
-        acc_phone.text = merchantData?.getString("phoneNumber")
-        acc_email.text = merchantData?.getString("email")
-//        Log.d("Ashwith",merchantData?.getString("imageUrl").toString())
-//        ActiveUserData.data?.getString("image")?.let { imageUrl ->
-//            context?.let{
-//                profilePicture.loadImage(imageUrl, CircularProgressDrawable(activity!!))
-//            }
-//        }
-
-//        Log.d("AshImg", merchantData?.getString("image").toString())
-       profilePicture.loadImage(merchantData?.getString("imageProf"), CircularProgressDrawable(activity!!))
-        //profilePicture.loadImage(merchantData?.getString("image"), CircularProgressDrawable(activity!!))"https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"
     }
 
-    private fun logout() {
-        ActiveUserData.signOut()
-        val loginIntent = Intent(activity, LoginActivity::class.java)
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        startActivity(loginIntent)
-        activity?.finish()
+    private void logout() {
+        ActiveUserData.signOut();
+
+        Intent loginIntent = new Intent(getActivity(), LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(loginIntent);
+
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 }
