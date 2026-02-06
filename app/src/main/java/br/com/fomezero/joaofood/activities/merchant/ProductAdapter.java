@@ -1,43 +1,64 @@
 package br.com.fomezero.joaofood.activities.merchant
 
-import android.content.Context
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.CircularProgressDrawable
-import br.com.fomezero.joaofood.R
-import br.com.fomezero.joaofood.util.loadImage
-import br.com.fomezero.joaofood.model.Product
 
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-class ProductAdapter(
-    private var productList: List<Product>,
-    private var context: Context
-) : RecyclerView.Adapter<ProductAdapter.MyViewHolder>() {
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.CircularProgressDrawable;
 
+import java.util.List;
 
-    override fun getItemCount(): Int {
-        return productList.size
+import br.com.fomezero.joaofood.R;
+import br.com.fomezero.joaofood.model.Product;
+import static br.com.fomezero.joaofood.util.ImageLoader.loadImage; // adjust if needed
+
+public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.MyViewHolder> {
+
+    private List<Product> productList;
+    private Context context;
+
+    public ProductAdapter(List<Product> productList, Context context) {
+        this.productList = productList;
+        this.context = context;
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        val product = productList[position]
-        holder.name.text = product.name
-        holder.image.loadImage(product.imageUrl, CircularProgressDrawable(context))
+    @Override
+    public int getItemCount() {
+        return productList.size();
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
-        val itemView: View = LayoutInflater.from(parent.context).inflate(R.layout.card_list, parent, false)
-        return MyViewHolder(itemView)
+    @Override
+    public void onBindViewHolder(MyViewHolder holder, int position) {
+        Product product = productList.get(position);
+        holder.name.setText(product.getName());
+
+        CircularProgressDrawable drawable = new CircularProgressDrawable(context);
+        drawable.start();
+
+        // Adjust this call depending on your loadImage implementation
+        loadImage(holder.image, product.getImageUrl(), drawable);
     }
 
-    class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        var name: TextView = view.findViewById(R.id.name)
-        var image: ImageView = view.findViewById(R.id.image)
+    @Override
+    public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.card_list, parent, false);
+        return new MyViewHolder(itemView);
+    }
 
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
+        TextView name;
+        ImageView image;
+
+        public MyViewHolder(View view) {
+            super(view);
+            name = view.findViewById(R.id.name);
+            image = view.findViewById(R.id.image);
+        }
     }
 }
